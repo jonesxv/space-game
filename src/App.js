@@ -34,13 +34,22 @@ class App extends React.Component {
   ship = [];
 
   handleKeyPress = (e , keyPress) => {
-    console.log(keyValue[e.keyCode])
     this.setState(prevState => {
       return {
         keys: {
           ...prevState.keys,
           [keyValue[e.keyCode]]: keyPress
         }
+      }
+    })
+  }
+
+  handleResize = () => {
+    this.setState({
+      screen: { 
+        width: window.innerWidth,
+        height: window.innerHeight,
+        ratio: window.devicePixelRatio || 1
       }
     })
   }
@@ -54,13 +63,11 @@ class App extends React.Component {
     let ship = new Ship({
       position: {
         x: this.state.screen.width / 2,
-        y: this.state.screen.height / 2
+        y: this.state.screen.height - 40
       },
       create: this.createItem
     })
     this.createItem(ship, 'ship')
-
-    console.log(this.ship[0])
   }
 
   createItem = (item, type) => {
@@ -103,11 +110,19 @@ class App extends React.Component {
   componentDidMount() {
     window.addEventListener('keyup', e => this.handleKeyPress(e, false))
     window.addEventListener('keydown', e => this.handleKeyPress(e, true))
+    window.addEventListener('resize', e => this.handleResize())
     const ctx = this.refs.canvas.getContext('2d')
     this.setState({ ctx })
     this.start()
     requestAnimationFrame(() => this.renderUpdate())
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('keyup', this.handleKeys);
+    window.removeEventListener('keydown', this.handleKeys);
+    window.removeEventListener('resize', this.handleResize);
+  }
+
   render() {
     return (
       <div>

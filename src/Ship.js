@@ -22,8 +22,7 @@ class Ship {
   //   }
   // }
 
-  accelerate(val){
-    this.velocity.x -= this.speed;
+  up(val){
     this.velocity.y -= this.speed;
 
     // Thruster particles
@@ -43,17 +42,33 @@ class Ship {
     // this.create(particle, 'particles');
   }
 
+  left(val) {
+    this.velocity.x -= this.speed;
+  }
+
+  right(val) {
+    this.velocity.x += this.speed;
+  }
+
+  down(val) {
+    this.velocity.y += this.speed;
+  }
+
   render(state){
-    // Controls
-    if(state.keys.up){
-      this.accelerate(1);
+
+    if (state.keys.up) {
+      this.up(1);
     }
-    // if(state.keys.left){
-    //   this.rotate('LEFT');
-    // }
-    // if(state.keys.right){
-    //   this.rotate('RIGHT');
-    // }
+    if (state.keys.left) {
+      this.left(1);
+    }
+    if(state.keys.right) {
+      this.right(1);
+    }
+    if (state.keys.down) {
+      this.down(1);
+    }
+
     if(state.keys.space && Date.now() - this.lastShot > 300){
       // const bullet = new Bullet({ship: this});
       // this.create(bullet, 'bullets');
@@ -66,22 +81,42 @@ class Ship {
     this.velocity.x *= this.inertia;
     this.velocity.y *= this.inertia;
 
-    // Rotation
-    // if (this.rotation >= 360) {
-    //   this.rotation -= 360;
-    // }
-    // if (this.rotation < 0) {
-    //   this.rotation += 360;
-    // }
-
     // Screen edges
-    if(this.position.x > state.screen.width) this.position.x = 0;
-    else if(this.position.x < 0) this.position.x = state.screen.width;
-    if(this.position.y > state.screen.height) this.position.y = 0;
-    else if(this.position.y < 0) this.position.y = state.screen.height;
+    if((this.position.x + 19) > state.screen.width) {
+      this.position.x = state.screen.width - 19;
+      // bounce
+      this.left(1)
+      this.left(1)
+      this.left(1)
+      this.left(1)
+      this.left(1)
+    }
+    else if(this.position.x < 19) {
+      this.position.x = 19;
+      this.right(1)
+      this.right(1)
+      this.right(1)
+      this.right(1)
+      this.right(1)
+    }
+    if((this.position.y + 19) > state.screen.height) {
+      this.position.y = state.screen.height - 19;
+      this.up(1)
+      this.up(1)
+      this.up(1)
+      this.up(1)
+      this.up(1)
+    }
+    else if(this.position.y < 19) {
+      this.position.y = 19;
+      this.down(1)
+      this.down(1)
+      this.down(1)
+      this.down(1)
+      this.down(1)
+    }
 
     // Draw
-    console.log(this.position.x, this.position.y)
     const ctx = state.ctx;
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
@@ -104,7 +139,6 @@ class Ship {
     ctx.fill();
     ctx.stroke();
     ctx.restore();
-    console.log(ctx)
   }
 }
 
